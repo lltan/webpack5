@@ -1,45 +1,62 @@
-const {resolve} = require('path');
+const { join, resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {CleanWebpackPlugin} = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { type } = require('os');
 
-module.exports={
-    entry:'./src/index.js',
-    output:{
-        filename:'js/[name]_[hash]_built.js',
-        path:resolve(__dirname,"build")
+module.exports = {
+    entry: './src/index.js',
+    output: {
+        filename: '[name]_[hash]_built.js',
+        path: resolve(__dirname, "build")
     },
-    module:{
-        rules:[
+    module: {
+        rules: [
             {
-                test:/\.css$/,
-                use:[
+                test: /\.css$/,
+                use: [
                     "style-loader",
                     "css-loader",
                 ]
             },
             {
-                test:/\.less$/,
-                use:[
+                test: /\.less$/,
+                use: [
                     "style-loader",
                     "css-loader",
                     "less-loader"
                 ]
             },
             {
-                exclude:/\.(css|js|html)$/,
-                test:/\.(ttf|eot|woff2)$/,
-                type:"asset/resource",
-                generator:{
-                    filename:"font/[name].[hash:6].[ext]"
+                exclude: /\.(css|js|css|less|html)$/,
+                test: /\.(ttf|eot|woff2)$/,
+                type: "asset/resource",
+                generator: {
+                    filename: "font/[name].[hash:6].[ext]"
                 }
+            },
+            {
+                test: /\.(jpg|png|jpeg|gif|svg)$/,
+                type: "asset",
+                generator: {
+                    filename: "img/[name].[hash:6].[ext]"
+                },
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 100 * 1024
+                    }
+                }
+            },
+            //webpack5 打包Html 中的图片需要安装下面loader html-withimg-loader 
+            {
+                test: /\.html$/,
+                loader: "html-withimg-loader"
             }
             // //打包其他资源（html/js/css）//webpack4 配置方式
             // {
             //     exclude:/\.(css|js|css)/,
             //     loader:'file-loader'
             // },
-            
+
             // {
             //     //配置解析样式中的图片 这里需要安装两个loader url-loader 和file-loader,但配置是只需要配置一个url-loader
             //     test:/\.(jpg|png|gif)$/,
@@ -75,18 +92,31 @@ module.exports={
             //             esModule:false
             //         }
             //     }]
-                
             // }
         ]
     },
-    plugins:[
+    plugins: [
         //不做任何配置默认创建一个空的html文件，自动引入打包输出的所有资源文件（js/css）
         new HtmlWebpackPlugin({
             //配置template 就会以index.html 为模板复制一个index.html 到打包输出目录中并自动引入所有打包后的资源文件
-            template:'./src/index.html'
+            template: './src/index.html'
         }),
         //默认清理插件会清除output.path 指定的路径
         new CleanWebpackPlugin()
     ],
-    mode:"development"
+    mode: "development",
+    //开发服务器devServer 用来自动化编译
+    //特点只在内存中打包，不会有任何输出
+    devServer: {
+        //contentBase:resolve(__dirname,'build'),webpack5不在支持contentBase这个属性
+        //webpack5写法如下：
+        static: {
+            directory: join(__dirname, 'build')
+        },
+        //启动gzip压缩
+        compress: true,
+        port: 3000,
+        //自动打开浏览器
+        open: true
+    }
 }

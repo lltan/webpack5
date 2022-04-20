@@ -1,0 +1,16 @@
+/*!******************************************************************!*\
+  !*** css ../node_modules/css-loader/dist/cjs.js!./src/css/a.css ***!
+  \******************************************************************/
+#box1{
+    width: 100px;
+    height: 100px;
+    background-color: blanchedalmond;
+}
+/*!******************************************************************!*\
+  !*** css ../node_modules/css-loader/dist/cjs.js!./src/css/b.css ***!
+  \******************************************************************/
+#box2{
+    width: 300px;
+    height: 300px;
+    background-color: chocolate;
+}

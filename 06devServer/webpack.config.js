@@ -27,11 +27,11 @@ module.exports={
                 ]
             },
             {
-                exclude:/\.(css|js|css)/,
-                test:"/\.(ttf|eot|woff2)$/",
+                exclude:/\.(css|js|css)$/,
+                test:/\.(ttf|eot|woff2)$/,
                 type:"asset/resource",
                 generator:{
-                    filename:"font/[name].[host:6].[ext]"
+                    filename:"font/[name].[hash:6].[ext]"
                 }
             }
             // //打包其他资源（html/js/css）//webpack4 配置方式
