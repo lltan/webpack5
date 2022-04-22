@@ -53,6 +53,7 @@ module.exports = {
                         }
                      */
                     {
+                        //css 兼容性处理loader
                         loader:"postcss-loader",
                         options:{
                             postcssOptions:{
