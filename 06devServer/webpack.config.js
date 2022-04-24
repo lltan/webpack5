@@ -93,6 +93,7 @@ module.exports={
     //特点只在内存中打包，不会有任何输出
     devServer:{
         //contentBase:resolve(__dirname,'build'),webpack5不在支持contentBase这个属性
+        //安装webpack-dev-server插件
         //webpack5写法如下：
         static:{
             directory:join(__dirname,'build')
