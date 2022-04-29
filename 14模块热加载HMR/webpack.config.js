@@ -1,12 +1,28 @@
 const { join, resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const { type } = require('os');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
+// const { webpack } = require('webpack');
+// const commonCssLoader = [
+//     MiniCssExtractPlugin.loader,
+//     'css-loader',
+//     {
+//         loader: 'postcss-loader',
+//         options: {
+//             postcssOptions: {
+//                 plugins: [
+//                     require("postcss-preset-env")()
+//                 ]
+//             }
+//         }
+//     }
+// ]
 
 module.exports = {
     entry: './src/index.js',
     output: {
-        filename: '[name]_[hash]_built.js',
+        filename: 'js/[name]_[hash]_built.js',
         path: resolve(__dirname, "build")
     },
     module: {
@@ -26,6 +42,33 @@ module.exports = {
                     "less-loader"
                 ]
             },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: "babel-loader",
+                options: {
+                    presets: [
+                        [
+                            '@babel/preset-env',
+                            {
+                                useBuiltIns: "usage",
+                                corejs: {
+                                    version: "3",
+                                    //提案
+                                    proposals:true
+                                },
+                                targets: {
+                                    chrome: '60',
+                                    firefox: '60',
+                                    ie: '9',
+                                    safari: '10',
+                                    edge: '17'
+                                }
+                            }
+                        ]
+                    ]
+                }
+            },
             {//处理样式中的图片
                 test: /\.(jpg|png|jpeg|gif)/,
                 type: "asset",
@@ -43,11 +86,17 @@ module.exports = {
                 loader: 'html-withimg-loader'
             },
             {//字体
-                exclude: /\.(css|js|css)$/,
                 test: /\.(ttf|eot|woff2)$/,
                 type: "asset/resource",
                 generator: {
                     filename: "font/[name].[hash:6].[ext]"
+                }
+            },
+            {//其他资源
+                exclude: /\.(css|js|less|ttf|eot|woff2|jpg|png|jpeg|gif|html)$/,
+                type: "asset/resource",
+                generator: {
+                    filename: "sources/[name].[hash:6].[ext]"
                 }
             }
             // //打包其他资源（html/js/css）//webpack4 配置方式
@@ -99,10 +148,22 @@ module.exports = {
         //不做任何配置默认创建一个空的html文件，自动引入打包输出的所有资源文件（js/css）
         new HtmlWebpackPlugin({
             //配置template 就会以index.html 为模板复制一个index.html 到打包输出目录中并自动引入所有打包后的资源文件
-            template: './src/index.html'
+            template: './src/index.html',
+            title:"热加载HMR"
         }),
         //默认清理插件会清除output.path 指定的路径
-        new CleanWebpackPlugin()
+        new CleanWebpackPlugin(),
+        // new MiniCssExtractPlugin({
+        //     filename: "css/[name][hash:10].css"
+        // }
+        // ),
+        new ESLintPlugin({
+            fix: true, // 自动修复
+            exclude: 'node_modules', // 默认值mode_modules
+            context: 'src',
+        })
+        // new webpack.HotModuleReplacementPlugin(),
+        // new webpack.NamedModulesPlugin(),
     ],
     mode: "development",
     //开发服务器devServer 用来自动化编译
@@ -118,6 +179,8 @@ module.exports = {
         compress: true,
         port: 3000,
         //自动打开浏览器
-        open: true
+        open: true,
+        //开启HMR模块热加载
+        hot: true
     }
 }

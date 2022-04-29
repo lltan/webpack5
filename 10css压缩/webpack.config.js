@@ -21,14 +21,15 @@ module.exports = {
             //重命名单独提取出来的css 文件名称
             filename:"css/[name].[hash:10].css"
         }),
-        //css 压缩需要下载插件css-minimizer-webpack-plugin
+        //webpack4 使用插件optimize-css-assets-webpack-plugin压缩css 文件
+        //webpack5 css 压缩需要下载插件css-minimizer-webpack-plugin
         //配置点1
         new CssMinimizerPlugin()
     ],
     module: {
         rules: [
             {
-                test: /\.(css|less)$/,
+                test: /\.css$/,
                 use: [
                     //"style-loader", //在html页面中添加style 标记并且引用编译后的js文件 单独提取css需要去除style-loader
                     //使用插件MiniCssExtractPlugin 中自带的loader
