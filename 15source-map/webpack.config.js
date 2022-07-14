@@ -2,22 +2,22 @@ const { join, resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ESLintPlugin = require('eslint-webpack-plugin');
+const  ESLintPlugin  = require('eslint-webpack-plugin');
 // const { webpack } = require('webpack');
-// const commonCssLoader = [
-//     MiniCssExtractPlugin.loader,
-//     'css-loader',
-//     {
-//         loader: 'postcss-loader',
-//         options: {
-//             postcssOptions: {
-//                 plugins: [
-//                     require("postcss-preset-env")()
-//                 ]
-//             }
-//         }
-//     }
-// ]
+const commonCssLoader = [
+    MiniCssExtractPlugin.loader,
+    'css-loader',
+    {
+        loader: 'postcss-loader',
+        options: {
+            postcssOptions: {
+                plugins: [
+                    require("postcss-preset-env")()
+                ]
+            }
+        }
+    }
+]
 
 module.exports = {
     entry: './src/index.js',
@@ -29,16 +29,12 @@ module.exports = {
         rules: [
             {
                 test: /\.css$/,
-                use: [
-                    "style-loader",
-                    "css-loader",
-                ]
+                use: [...commonCssLoader]
             },
             {
                 test: /\.less$/,
                 use: [
-                    "style-loader",
-                    "css-loader",
+                    ...commonCssLoader,
                     "less-loader"
                 ]
             },
@@ -55,7 +51,7 @@ module.exports = {
                                 corejs: {
                                     version: "3",
                                     //提案
-                                    proposals:true
+                                    proposals: true
                                 },
                                 targets: {
                                     chrome: '60',
@@ -93,7 +89,7 @@ module.exports = {
                 }
             },
             {//其他资源
-                exclude: /\.(css|js|less|ttf|eot|woff2|jpg|png|jpeg|gif|html)$/,
+                exclude: /\.(ttf|eot|woff2)$/,
                 type: "asset/resource",
                 generator: {
                     filename: "sources/[name].[hash:6].[ext]"
@@ -149,7 +145,10 @@ module.exports = {
         new HtmlWebpackPlugin({
             //配置template 就会以index.html 为模板复制一个index.html 到打包输出目录中并自动引入所有打包后的资源文件
             template: './src/index.html',
-            title:"热加载HMR"
+            title: "source-map"
+        }),
+        new MiniCssExtractPlugin({
+            filename: 'css/[name]-[hash:10].css',
         }),
         //默认清理插件会清除output.path 指定的路径
         new CleanWebpackPlugin(),
@@ -182,5 +181,40 @@ module.exports = {
         open: true,
         //开启HMR模块热加载
         hot: true
-    }
-}
+    },
+    devtool: "source-map"
+};
+
+/**
+ * source-map :一种 提供源代码到构建后代码的映射技术，（如果构建后的代码出错，通过映射可以追踪到源代码错误的地方）
+ * source-map:外部,
+ * [inline-|hidden-|evel-][nosource-][cheap-][module-]source-map
+ * inline-source-map :内联，只会生产一个打包后的文件，source-map文件信息会在打包后文件的最下面
+ * hidden-source-map:外部，打包后会生产两个文件一个是打包后的源码文件，一个是source-map 映射内容文件
+ * evel-source-map:内联，打包后只有一个文件，source-map映射内容会在每个打包后文件内容的最后面
+ * 
+ * nosource-source-map:外部
+ * cheap-source-map:外部
+ * cheap-module-source-map:外部
+ * 
+ * 
+ * 开发环境：速度快，调试友好
+ * 速度快（eval>inline>cheap>...）
+ * eval-cheap-source-map
+ * eval-source-map
+ * 调试友好
+ * source-map
+ * cheap-module-source-map
+ * cheap-source-map
+ * 综合考虑开发环境优先选择 eval-source-map
+ * -->eval-source-map / eval-cheap-module-source-map
+ * 
+ * 
+ * 生产环境： 源代码隐藏，调试友好
+ * 内联会导致打包后代码体积变大，所以在生产环境中不使用内联
+ * nosource-source-map :源代码全部隐藏
+ * hidden-source-map :只隐藏源代码，会提示构建后代码错误信息
+ * 综合考虑选择 source-map
+ * --> source-map/cheap-module-source-map
+ * 
+ */

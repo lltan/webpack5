@@ -7,7 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const { resolve } = require('path');
 //js语法检查 还需在package.json 文件中配置"eslintConfig": {"extends": "airbnb-base"}
-const {default:ESLintPlugin}= require('eslint-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 
 //定义nodejs 环境变量，决定使用browserslist的那个环境 默认使用的是production
@@ -123,7 +123,7 @@ module.exports = {
       filename: 'css/[name]-[hash:10].css',
     }),
     new CssMinimizerPlugin(),
-    // js语法检查插件
+    // js语法检查插件 这个与webpack4 中的eslint-loader作用一样
     new ESLintPlugin({
       fix: true, // 自动修复
       exclude: 'node_modules', // 默认值mode_modules

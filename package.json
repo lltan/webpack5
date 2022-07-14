@@ -37,7 +37,7 @@
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.8.1"
   },
-  "type":"commonjs",
+  
   "dependencies": {},
   "browserslist": {
     "development": [
@@ -62,14 +62,7 @@
           "devDependencies": true
         }
       ],
-      " import/no-import-module-exports": [
-        "error",
-        {
-          "exceptions": [
-            "./js/print.js"
-          ]
-        }
-      ],
+      "import/no-import-module-exports": "off",
       "import/extensions": [
         "error",
         {
@@ -79,8 +72,6 @@
           "js": "never",
           "jsx": "never"
         }
-
-
       ]
     }
   }
